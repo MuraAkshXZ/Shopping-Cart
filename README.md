@@ -6,7 +6,7 @@ Do a "mvn clean install" and deploy the jar or else run the CartApplication.java
 ## DB:
 Embedded H2 DB is setup with following tables:
 ### Product: 
-For storing the products available in the market. Initially I am loading three products with their initial quantities in the market : TV : 10, LAPTOP: 20, WATCH: 10)  
+For storing the products available in the market.
 
 ### OrderConfirmation: 
 For storing the Confirmed Orders.
