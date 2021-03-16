@@ -28,12 +28,15 @@ public class ProdServiceImpl implements ProdService {
 
     private static final Logger log = LoggerFactory.getLogger(ProdServiceImpl.class);
 
-    @Autowired
-    ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    private final OrderRepository orderRepository;
 
     @Autowired
-    OrderRepository orderRepository;
-
+    public ProdServiceImpl(ProductRepository productRepository, OrderRepository orderRepository){
+        this.productRepository = productRepository;
+        this.orderRepository = orderRepository;
+    }
 
     @Override
     public Product getProd(String id) {

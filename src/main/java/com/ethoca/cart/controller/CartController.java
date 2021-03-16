@@ -29,8 +29,12 @@ public class CartController {
     private static final String CART_SESSION_CONSTANT = "CART_SESSION";
     private static final Logger log = LoggerFactory.getLogger(CartController.class);
 
+    private final ProdService prodService;
+
     @Autowired
-    ProdService prodService;
+    public CartController(ProdService prodService){
+        this.prodService = prodService;
+    }
 
     //List all the products in the website containing the keyword
     @GetMapping("/list/{name}")
@@ -48,7 +52,7 @@ public class CartController {
 
     //Retrieve all the products in the market
     @GetMapping("/retrieve")
-    public List<Product> getProd(final HttpServletRequest request) {
+    public List<Product> getProdAll(final HttpServletRequest request) {
         log.info(request.getSession().getId() + " : Retrieving all products");
         return prodService.getAll();
     }
