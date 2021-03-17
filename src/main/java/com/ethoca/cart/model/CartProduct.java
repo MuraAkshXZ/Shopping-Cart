@@ -8,7 +8,7 @@ public class CartProduct implements Serializable {
 
     private String productName;
 
-    private int quantity;
+    private Integer quantity;
 
     private BigDecimal cost;
 
@@ -22,11 +22,11 @@ public class CartProduct implements Serializable {
         this.productName = productName;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 

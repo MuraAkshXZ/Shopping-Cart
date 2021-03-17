@@ -8,6 +8,8 @@ import com.ethoca.cart.model.OrderProduct;
 import com.ethoca.cart.model.db.OrderConfirmation;
 import com.ethoca.cart.model.db.Product;
 import com.ethoca.cart.service.ProdService;
+import com.ethoca.cart.utils.ControllerUtils;
+import com.ethoca.cart.utils.ServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,23 +40,16 @@ public class CartController {
 
     //List all the products in the website containing the keyword
     @GetMapping("/list/{name}")
-    public List<Product> getProd(@PathVariable String name, final HttpServletRequest request) {
+    public ResponseEntity<List<Product>> getProd(@PathVariable String name, final HttpServletRequest request) {
         log.info(request.getSession().getId() + " : Retrieving products with given keyword");
-        return prodService.getProdList(name);
-    }
-
-    //Find the exact product in the market
-    @GetMapping("/find/{name}")
-    public Product findProd(@PathVariable String name, final HttpServletRequest request) {
-        log.info(request.getSession().getId() + " : Retrieving products for a product name");
-        return prodService.getProd(name);
+        return ResponseEntity.status(HttpStatus.OK).body(prodService.getProdList(name));
     }
 
     //Retrieve all the products in the market
     @GetMapping("/retrieve")
-    public List<Product> getProdAll(final HttpServletRequest request) {
+    public ResponseEntity<List<Product>> getProdAll(final HttpServletRequest request) {
         log.info(request.getSession().getId() + " : Retrieving all products");
-        return prodService.getAll();
+        return ResponseEntity.status(HttpStatus.OK).body(prodService.getAll());
     }
 
     //Place the order from your cart
@@ -71,7 +66,7 @@ public class CartController {
         //check if items are still available during confirmation of order
         List<OrderProduct> orderProducts = new ArrayList<>();
         for (String key : initialCart.keySet())
-            orderProducts.add(CartResponseBuilder.parse(initialCart.get(key)));
+            orderProducts.add(ControllerUtils.parse(initialCart.get(key)));
         List<String> chckQuantity = prodService.checkQuantityList(orderProducts);
         if (chckQuantity != null) {
             log.error(request.getSession().getId() + " : Error submitting order for products unavailable");
@@ -97,11 +92,14 @@ public class CartController {
             throw new EmptyCartException("Cart is empty");
         }
 
+        //Check if update is asked for items not present in the cart
+        ControllerUtils.checkCart(initialCart, orderProducts);
+
         //Check if the cart can be updated and update them
         log.info(request.getSession().getId() + " : Processing the update of the cart");
         List<String> chckQuantity = prodService.checkQuantityList(orderProducts);
         if (chckQuantity == null) {
-            CartResponseBuilder.updateCart(initialCart, orderProducts);
+            ControllerUtils.updateCart(initialCart, orderProducts);
             request.getSession().setAttribute(CART_SESSION_CONSTANT, initialCart);
             return ResponseEntity.status(HttpStatus.OK).body(initialCart);
         } else {
@@ -118,7 +116,7 @@ public class CartController {
         log.info(request.getSession().getId() + " : Reviewing the initial cart");
         Map<String, CartProduct> initialCart = (Map<String, CartProduct>) request.getSession().getAttribute(CART_SESSION_CONSTANT);
 
-        int quantity = orderProduct.getQuantity();
+        Integer quantity = orderProduct.getQuantity();
 
         //Check if cart is empty and instantiate it, if product is already there in the cart, update them
         if (CollectionUtils.isEmpty(initialCart)) {
@@ -133,7 +131,7 @@ public class CartController {
         log.info(request.getSession().getId() + " : Processing the addition of product to the cart");
         Product product = prodService.getProd(orderProduct.getProductName());
         if (product.getQuantity() >= quantity) {
-            CartProduct cartProduct = CartResponseBuilder.buildCartProduct(product, quantity);
+            CartProduct cartProduct = ControllerUtils.buildCartProduct(product, quantity);
             initialCart.put(orderProduct.getProductName(), cartProduct);
             request.getSession().setAttribute(CART_SESSION_CONSTANT, initialCart);
             return ResponseEntity.status(HttpStatus.OK).body("Product " + orderProduct.getProductName() + " added to the cart");
@@ -146,7 +144,7 @@ public class CartController {
 
     //View your current cart
     @GetMapping(value = "/viewcart")
-    public List<CartProduct> viewCart(final HttpServletRequest request) {
+    public ResponseEntity<List<CartProduct>> viewCart(final HttpServletRequest request) {
         log.info(request.getSession().getId() + " : Retrieving the cart to view");
         Map<String, CartProduct> initialCart = (Map<String, CartProduct>) request.getSession().getAttribute(CART_SESSION_CONSTANT);
         if (CollectionUtils.isEmpty(initialCart)) {
@@ -158,7 +156,7 @@ public class CartController {
         for (String key : initialCart.keySet()) {
             result.add(initialCart.get(key));
         }
-        return result;
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
 

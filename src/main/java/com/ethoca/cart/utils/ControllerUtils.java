@@ -1,16 +1,18 @@
-package com.ethoca.cart.controller;
+package com.ethoca.cart.utils;
 
+import com.ethoca.cart.exception.ProductNotFoundException;
 import com.ethoca.cart.model.CartProduct;
 import com.ethoca.cart.model.OrderProduct;
 import com.ethoca.cart.model.db.Product;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CartResponseBuilder {
+public class ControllerUtils {
 
-    public static CartProduct buildCartProduct(Product product, int quantity){
+    public static CartProduct buildCartProduct(Product product, Integer quantity){
         CartProduct cartProduct = new CartProduct();
         cartProduct.setProductName(product.getProductName());
         cartProduct.setQuantity(quantity);
@@ -34,5 +36,15 @@ public class CartResponseBuilder {
         orderProduct.setProductName(cartProduct.getProductName());
         orderProduct.setQuantity(cartProduct.getQuantity());
         return orderProduct;
+    }
+
+    public static void checkCart(Map<String, CartProduct> initialCart, List<OrderProduct> orderProducts){
+        List<String> result = new ArrayList<>();
+        for(OrderProduct product : orderProducts){
+            if(!initialCart.containsKey(product.getProductName()))
+                result.add(product.getProductName());
+        }
+        if(!result.isEmpty())
+            throw new ProductNotFoundException(result);
     }
 }

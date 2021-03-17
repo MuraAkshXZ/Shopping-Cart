@@ -13,7 +13,7 @@ public interface ProdService {
 
     Product getProd(String id);
 
-    Product getProdId(int id);
+    Product getProdId(Integer id);
 
     List<Product> getProdList(String id);
 
@@ -21,7 +21,7 @@ public interface ProdService {
 
     List<String> checkQuantityList(List<OrderProduct> orderProducts);
 
-    boolean checkQuantity(String productName, int quantity);
+    boolean checkQuantity(String productName, Integer quantity);
 
     OrderConfirmation confirmOrder(Map<String, CartProduct> orderProducts) throws Exception;
 

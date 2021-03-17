@@ -1,14 +1,13 @@
 package com.ethoca.cart.service;
 
-import com.ethoca.cart.controller.CartController;
 import com.ethoca.cart.exception.ProductNotFoundException;
 import com.ethoca.cart.model.CartProduct;
-import com.ethoca.cart.model.ConfirmProduct;
 import com.ethoca.cart.model.OrderProduct;
 import com.ethoca.cart.model.db.OrderConfirmation;
 import com.ethoca.cart.model.db.Product;
 import com.ethoca.cart.repository.OrderRepository;
 import com.ethoca.cart.repository.ProductRepository;
+import com.ethoca.cart.utils.ServiceUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,7 @@ public class ProdServiceImpl implements ProdService {
     private final OrderRepository orderRepository;
 
     @Autowired
-    public ProdServiceImpl(ProductRepository productRepository, OrderRepository orderRepository){
+    public ProdServiceImpl(ProductRepository productRepository, OrderRepository orderRepository) {
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
     }
@@ -49,7 +48,7 @@ public class ProdServiceImpl implements ProdService {
     }
 
     @Override
-    public Product getProdId(int id) {
+    public Product getProdId(Integer id) {
         return productRepository.findByProductId(id);
     }
 
@@ -79,7 +78,7 @@ public class ProdServiceImpl implements ProdService {
 
         //Compare the product quantity ordered with availability in the market
         for (Product product : products) {
-            int initial = product.getQuantity();
+            Integer initial = product.getQuantity();
             if (initial < quantity.get(product.getProductName())) {
                 result.add(product.getProductName());
             }
@@ -91,7 +90,7 @@ public class ProdServiceImpl implements ProdService {
     }
 
     @Override
-    public boolean checkQuantity(String productName, int quantity) {
+    public boolean checkQuantity(String productName, Integer quantity) {
         Product product = productRepository.findByProductName(productName);
 
         if (product == null) {
@@ -113,33 +112,30 @@ public class ProdServiceImpl implements ProdService {
         ObjectMapper mapper = new ObjectMapper();
         Date date = new Date(System.currentTimeMillis());
         BigDecimal bill = BigDecimal.valueOf(0);
-        List<ConfirmProduct> confirmProducts = new ArrayList<>();
+        List<CartProduct> cartProducts = new ArrayList<>();
 
-        //Get the exisitng list of products available in the website
+        //Get the exisitng list of products available in the website and caluclate total bill
         List<String> productNames = new ArrayList<>();
         Map<String, Integer> quantityChange = new HashMap<>();
         for (String productName : orderProducts.keySet()) {
             productNames.add(productName);
             quantityChange.put(productName, orderProducts.get(productName).getQuantity());
+
+            cartProducts.add(orderProducts.get(productName));
+            bill = bill.add(orderProducts.get(productName).getTotalCost());
+
         }
         List<Product> products = productRepository.findAllByProductNameIn(productNames);
 
-        //update the quantities and calculate the total bill
+        //update the quantities
         for (Product product : products) {
-            int initial = product.getQuantity();
+            Integer initial = product.getQuantity();
             product.setQuantity(initial - quantityChange.get(product.getProductName()));
-
-            confirmProducts.add(new ConfirmProduct(product.getProductName(),
-                    quantityChange.get(product.getProductName()), product.getPrice(),
-                    product.getPrice().multiply(BigDecimal.valueOf(quantityChange.get(product.getProductName())))));
-
-            bill = bill.add(product.getPrice().multiply(BigDecimal.valueOf(quantityChange.get(product.getProductName()))));
         }
 
-        String orderList = mapper.writeValueAsString(confirmProducts);
         //Perist the tables
         productRepository.saveAll(products);
-        OrderConfirmation confirmation = new OrderConfirmation(orderList, bill, date);
+        OrderConfirmation confirmation = new OrderConfirmation(ServiceUtils.cartToByte(cartProducts), bill, date);
         orderRepository.saveAndFlush(confirmation);
 
         return confirmation;

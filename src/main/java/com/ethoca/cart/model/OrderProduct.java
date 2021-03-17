@@ -2,7 +2,6 @@ package com.ethoca.cart.model;
 
 import javax.validation.constraints.Positive;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Objects;
 
 public class OrderProduct implements Serializable {
@@ -10,7 +9,7 @@ public class OrderProduct implements Serializable {
     private String productName;
 
     @Positive(message = "Minimum order should be 1")
-    private int quantity;
+    private Integer quantity;
 
     public String getProductName() {
         return productName;
@@ -20,11 +19,11 @@ public class OrderProduct implements Serializable {
         this.productName = productName;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 

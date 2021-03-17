@@ -1,9 +1,5 @@
 package com.ethoca.cart.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-import java.util.Collections;
 import java.util.List;
 
 public class AvailabilityException extends RuntimeException{

@@ -11,7 +11,7 @@ public class Product implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="product_id")
-    private int productId;
+    private Integer productId;
 
     @Column(name = "product_name", unique = true)
     private String productName;
@@ -20,7 +20,7 @@ public class Product implements Serializable{
     private BigDecimal price;
 
     @Column(name = "quantity", nullable = false)
-    private int quantity;
+    private Integer quantity;
 
     @Column(name = "description")
     private String description;
@@ -33,7 +33,7 @@ public class Product implements Serializable{
 
     }
 
-    public Product(String productName, BigDecimal price, int quantity, String description, String image) {
+    public Product(String productName, BigDecimal price, Integer quantity, String description, String image) {
         this.productName = productName;
         this.price = price;
         this.quantity = quantity;
@@ -41,7 +41,7 @@ public class Product implements Serializable{
         this.image = image;
     }
 
-    public int getProductId() {
+    public Integer getProductId() {
         return productId;
     }
 
@@ -61,11 +61,11 @@ public class Product implements Serializable{
         this.price = price;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
