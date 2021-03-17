@@ -21,11 +21,7 @@ public interface ProdService {
 
     List<String> checkQuantityList(List<OrderProduct> orderProducts);
 
-    boolean checkQuantity(String productName, Integer quantity);
-
     OrderConfirmation confirmOrder(Map<String, CartProduct> orderProducts) throws Exception;
-
-
 
 
 }

@@ -1,8 +1,6 @@
 package com.ethoca.cart.utils;
 
 import com.ethoca.cart.model.CartProduct;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -14,7 +12,6 @@ public class ServiceUtils {
     public static List<CartProduct> byteToCart(byte[] bytes) throws Exception{
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
         ObjectInputStream is = new ObjectInputStream(in);
-        ObjectMapper mapper = new ObjectMapper();
         List<CartProduct> cartProducts = (List<CartProduct>) is.readObject();
         return cartProducts;
     }

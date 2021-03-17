@@ -90,22 +90,6 @@ public class ProdServiceImpl implements ProdService {
     }
 
     @Override
-    public boolean checkQuantity(String productName, Integer quantity) {
-        Product product = productRepository.findByProductName(productName);
-
-        if (product == null) {
-            log.error(productName + " : product not available");
-            throw new ProductNotFoundException(productName);
-        }
-
-        if (product.getQuantity() < quantity)
-            return false;
-        else
-            return true;
-
-    }
-
-    @Override
     public OrderConfirmation confirmOrder(Map<String, CartProduct> orderProducts) throws Exception {
 
         //Initialize the values for the order confirmation

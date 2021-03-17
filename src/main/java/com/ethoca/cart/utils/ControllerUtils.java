@@ -1,9 +1,14 @@
 package com.ethoca.cart.utils;
 
+import com.ethoca.cart.exception.EmptyCartException;
 import com.ethoca.cart.exception.ProductNotFoundException;
 import com.ethoca.cart.model.CartProduct;
 import com.ethoca.cart.model.OrderProduct;
 import com.ethoca.cart.model.db.Product;
+import com.ethoca.cart.service.ProdServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -11,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ControllerUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(ControllerUtils.class);
 
     public static CartProduct buildCartProduct(Product product, Integer quantity){
         CartProduct cartProduct = new CartProduct();
@@ -46,5 +53,12 @@ public class ControllerUtils {
         }
         if(!result.isEmpty())
             throw new ProductNotFoundException(result);
+    }
+
+    public static void checkEmptyCart(Map<String, CartProduct> initialCart, String id){
+        if (CollectionUtils.isEmpty(initialCart)) {
+            log.error(id + " : Error submitting empty cart");
+            throw new EmptyCartException("Cart is empty");
+        }
     }
 }

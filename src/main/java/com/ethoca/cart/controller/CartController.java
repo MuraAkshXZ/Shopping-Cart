@@ -58,10 +58,7 @@ public class CartController {
         Map<String, CartProduct> initialCart = (Map<String, CartProduct>) request.getSession().getAttribute(CART_SESSION_CONSTANT);
         log.info(request.getSession().getId() + " : Reviewing the order");
         //check if the cart is empty
-        if (CollectionUtils.isEmpty(initialCart)) {
-            log.error(request.getSession().getId() + " : Error submitting empty cart");
-            throw new EmptyCartException("Cart is empty");
-        }
+        ControllerUtils.checkEmptyCart(initialCart, request.getSession().getId());
 
         //check if items are still available during confirmation of order
         List<OrderProduct> orderProducts = new ArrayList<>();
@@ -87,10 +84,7 @@ public class CartController {
         //Retrieve initial cart data stored in the session
         log.info(request.getSession().getId() + " : Reviewing the initial cart");
         Map<String, CartProduct> initialCart = (Map<String, CartProduct>) request.getSession().getAttribute(CART_SESSION_CONSTANT);
-        if (CollectionUtils.isEmpty(initialCart)) {
-            log.error(request.getSession().getId() + " : Error updating empty cart");
-            throw new EmptyCartException("Cart is empty");
-        }
+        ControllerUtils.checkEmptyCart(initialCart, request.getSession().getId());
 
         //Check if update is asked for items not present in the cart
         ControllerUtils.checkCart(initialCart, orderProducts);
@@ -147,10 +141,7 @@ public class CartController {
     public ResponseEntity<List<CartProduct>> viewCart(final HttpServletRequest request) {
         log.info(request.getSession().getId() + " : Retrieving the cart to view");
         Map<String, CartProduct> initialCart = (Map<String, CartProduct>) request.getSession().getAttribute(CART_SESSION_CONSTANT);
-        if (CollectionUtils.isEmpty(initialCart)) {
-            log.error(request.getSession().getId() + " : Error displaying empty cart");
-            throw new EmptyCartException("Cart is empty");
-        }
+        ControllerUtils.checkEmptyCart(initialCart, request.getSession().getId());
         List<CartProduct> result = new ArrayList();
 
         for (String key : initialCart.keySet()) {
@@ -159,33 +150,29 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-
+    //Delete the cart
     @DeleteMapping(value = "/deletecart")
     public ResponseEntity<String> deleteCart(final HttpServletRequest request) {
         log.info(request.getSession().getId() + " : Reviewing the initial cart");
         Map<String, CartProduct> initialCart = (Map<String, CartProduct>) request.getSession().getAttribute(CART_SESSION_CONSTANT);
 
         //check if the cart is empty
-        if (CollectionUtils.isEmpty(initialCart)) {
-            log.error(request.getSession().getId() + " : Error removing empty cart");
-            throw new EmptyCartException("Cart is empty");
-        }
+        ControllerUtils.checkEmptyCart(initialCart, request.getSession().getId());
 
         log.info(request.getSession().getId() + " : Remove the existing cart and kill the session");
         request.getSession().invalidate();
         return ResponseEntity.status(HttpStatus.OK).body("Cart removed");
     }
 
+    //Remove a product from the cart
     @DeleteMapping(value = "/deleteproduct")
     public ResponseEntity<String> deleteProduct(@RequestBody String productName, final HttpServletRequest request) {
         log.info(request.getSession().getId() + " : Reviewing the initial cart");
         Map<String, CartProduct> initialCart = (Map<String, CartProduct>) request.getSession().getAttribute(CART_SESSION_CONSTANT);
 
         //check if the cart is empty
-        if (CollectionUtils.isEmpty(initialCart)) {
-            log.error(request.getSession().getId() + " : Error removing from an empty cart");
-            throw new EmptyCartException("Cart is empty");
-        }
+        ControllerUtils.checkEmptyCart(initialCart, request.getSession().getId());
+
         if (!initialCart.containsKey(productName)) {
             log.error(request.getSession().getId() + " : Error removing product not present in the cart");
             throw new ProductNotFoundException(productName);
