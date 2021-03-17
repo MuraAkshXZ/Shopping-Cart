@@ -4,6 +4,7 @@ import com.ethoca.cart.model.CartProduct;
 import com.ethoca.cart.utils.ServiceUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMin;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -23,6 +24,7 @@ public class OrderConfirmation implements Serializable {
     private byte[] cartList;
 
     @Column(name = "bill", nullable = false)
+    @DecimalMin(value = "0.00", message = "Price has to be a positive number")
     private BigDecimal bill;
 
     @Column(name = "created_ts")

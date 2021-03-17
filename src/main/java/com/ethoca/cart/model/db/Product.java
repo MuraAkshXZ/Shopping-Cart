@@ -1,6 +1,8 @@
 package com.ethoca.cart.model.db;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Positive;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -17,9 +19,11 @@ public class Product implements Serializable{
     private String productName;
 
     @Column(name = "price", nullable = false)
+    @DecimalMin(value = "0.00", message = "Price has to be a positive number")
     private BigDecimal price;
 
     @Column(name = "quantity", nullable = false)
+    @Positive(message = "Minimum order should be 1")
     private Integer quantity;
 
     @Column(name = "description")
