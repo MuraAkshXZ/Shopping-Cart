@@ -34,8 +34,6 @@ Start with **/addcart** to add your product one at a time. Calling the same api 
 
 **/list/{name}** : to find products containing the keyword
 
-**/find/{name}** : to find the exact product
-
 **/deletecart** : to delete cart and session
 
 **/deleteproduct** : to remove the product from the cart
