@@ -27,19 +27,6 @@ public class OrderProduct implements Serializable {
         this.quantity = quantity;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OrderProduct orderProduct = (OrderProduct) o;
-        return quantity == orderProduct.quantity && Objects.equals(productName, orderProduct.productName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(productName, quantity);
-    }
-
 
     @Override
     public String toString() {
@@ -47,5 +34,18 @@ public class OrderProduct implements Serializable {
                 "productName='" + productName + '\'' +
                 ", quantity=" + quantity +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderProduct that = (OrderProduct) o;
+        return Objects.equals(productName, that.productName) && Objects.equals(quantity, that.quantity);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(productName, quantity);
     }
 }

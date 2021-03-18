@@ -47,19 +47,6 @@ public class CartProduct implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CartProduct that = (CartProduct) o;
-        return quantity == that.quantity && Objects.equals(productName, that.productName) && Objects.equals(cost, that.cost) && Objects.equals(totalCost, that.totalCost);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(productName, quantity, cost, totalCost);
-    }
-
-    @Override
     public String toString() {
         return "CartProduct{" +
                 "productName='" + productName + '\'' +
@@ -67,5 +54,18 @@ public class CartProduct implements Serializable {
                 ", cost=" + cost +
                 ", totalCost=" + totalCost +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CartProduct that = (CartProduct) o;
+        return Objects.equals(productName, that.productName) && Objects.equals(quantity, that.quantity) && Objects.equals(cost, that.cost) && Objects.equals(totalCost, that.totalCost);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(productName, quantity, cost, totalCost);
     }
 }

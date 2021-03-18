@@ -5,7 +5,6 @@ import com.ethoca.cart.exception.ProductNotFoundException;
 import com.ethoca.cart.model.CartProduct;
 import com.ethoca.cart.model.OrderProduct;
 import com.ethoca.cart.model.db.Product;
-import com.ethoca.cart.service.ProdServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
