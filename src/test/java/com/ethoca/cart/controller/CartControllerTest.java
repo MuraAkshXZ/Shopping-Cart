@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 
 import java.math.BigDecimal;
@@ -41,114 +40,112 @@ public class CartControllerTest {
     @Test
     public void testGetProd() {
         Mockito.when(prodService.getProdList("id")).thenReturn(getProducts());
-        ResponseEntity result = cartController.getProd("id", getRequest("CART_SESSION"));
+        ResponseEntity result = cartController.getProd("id", getSession("CART_SESSION"));
         assertEquals(200, result.getStatusCode().value());
     }
 
     @Test
     public void testGetProdAll() {
         Mockito.when(prodService.getAll()).thenReturn(getProducts());
-        ResponseEntity result = cartController.getProdAll(getRequest("CART_SESSION"));
+        ResponseEntity result = cartController.getProdAll(getSession("CART_SESSION"));
         assertEquals(200, result.getStatusCode().value());
     }
 
     @Test
     public void testPlaceOrder() throws Exception {
-        MockHttpServletRequest request = getRequest("CART_SESSION");
+        MockHttpSession session = getSession("CART_SESSION");
         Mockito.when(prodService.checkQuantityList(any())).thenReturn(null);
-        ResponseEntity result = cartController.placeOrder(request);
+        ResponseEntity result = cartController.placeOrder(session);
         assertEquals(200, result.getStatusCode().value());
     }
 
     @Test
     public void testPlaceOrderEmptyCart() throws Exception {
-        MockHttpServletRequest request = getRequest("EMPTY_CART");
-        assertThrows(EmptyCartException.class, () -> cartController.placeOrder(request));
+        MockHttpSession session = getSession("EMPTY_CART");
+        assertThrows(EmptyCartException.class, () -> cartController.placeOrder(session));
     }
 
     @Test
     public void testPlaceOrderInvalidProducts() throws Exception {
-        MockHttpServletRequest request = getRequest("CART_SESSION");
+        MockHttpSession session = getSession("CART_SESSION");
         List<String> err = new ArrayList<>();
         err.add("TVX");
         Mockito.when(prodService.checkQuantityList(any())).thenReturn(err);
-        assertThrows(AvailabilityException.class, () -> cartController.placeOrder(request));
+        assertThrows(AvailabilityException.class, () -> cartController.placeOrder(session));
     }
 
     @Test
     public void testUpdateCart() {
-        MockHttpServletRequest request = getRequest("CART_SESSION");
+        MockHttpSession session = getSession("CART_SESSION");
         Mockito.when(prodService.checkQuantityList(any())).thenReturn(null);
-        ResponseEntity result = cartController.updateCart(anyList(), request);
+        ResponseEntity result = cartController.updateCart(anyList(), session);
         assertEquals(200, result.getStatusCode().value());
     }
 
     @Test
     public void testUpdateCartInvalidProduct() {
-        MockHttpServletRequest request = getRequest("CART_SESSION");
+        MockHttpSession session = getSession("CART_SESSION");
         List<String> err = new ArrayList<>();
         err.add("TVX");
         Mockito.when(prodService.checkQuantityList(any())).thenReturn(err);
-        assertThrows(AvailabilityException.class, () -> cartController.updateCart(anyList(), request));
+        assertThrows(AvailabilityException.class, () -> cartController.updateCart(anyList(), session));
     }
 
     @Test
     public void testAddCartFirstTime() throws Exception {
-        MockHttpServletRequest request = getRequest("NEW_SESSION");
+        MockHttpSession session = getSession("NEW_SESSION");
         Mockito.when(prodService.getProd(any())).thenReturn(getProduct("TV", 20));
-        ResponseEntity result = cartController.addCart(getOrderProduct("TV", 10), request);
+        ResponseEntity result = cartController.addCart(getOrderProduct("TV", 10), session);
         assertEquals(200, result.getStatusCode().value());
     }
 
     @Test
     public void testAddCart() throws Exception {
-        MockHttpServletRequest request = getRequest("CART_SESSION");
+        MockHttpSession session = getSession("CART_SESSION");
         Mockito.when(prodService.getProd(any())).thenReturn(getProduct("TV", 30));
-        ResponseEntity result = cartController.addCart(getOrderProduct("TV", 10), request);
+        ResponseEntity result = cartController.addCart(getOrderProduct("TV", 10), session);
         assertEquals(200, result.getStatusCode().value());
     }
 
     @Test
     public void testAddCartAvailability() throws Exception {
-        MockHttpServletRequest request = getRequest("CART_SESSION");
+        MockHttpSession session = getSession("CART_SESSION");
         Mockito.when(prodService.getProd(any())).thenReturn(getProduct("TV", 15));
-        assertThrows(AvailabilityException.class, () -> cartController.addCart(getOrderProduct("TV", 10), request));
+        assertThrows(AvailabilityException.class, () -> cartController.addCart(getOrderProduct("TV", 10), session));
     }
 
     @Test
     public void testViewCart() {
-        MockHttpServletRequest request = getRequest("CART_SESSION");
-        ResponseEntity result = cartController.viewCart(request);
+        MockHttpSession session = getSession("CART_SESSION");
+        ResponseEntity result = cartController.viewCart(session);
         assertEquals(200, result.getStatusCode().value());
     }
 
     @Test
     public void testDeleteCart() {
-        MockHttpServletRequest request = getRequest("CART_SESSION");
-        ResponseEntity result = cartController.deleteCart(request);
+        MockHttpSession session = getSession("CART_SESSION");
+        ResponseEntity result = cartController.deleteCart(session);
         assertEquals(200, result.getStatusCode().value());
     }
 
     @Test
     public void testDeleteProduct() throws Exception {
-        MockHttpServletRequest request = getRequest("CART_SESSION");
-        ResponseEntity result = cartController.deleteProduct("TV", request);
+        MockHttpSession session = getSession("CART_SESSION");
+        ResponseEntity result = cartController.deleteProduct("TV", session);
         assertEquals(200, result.getStatusCode().value());
     }
 
     @Test
     public void testDeleteProductException() throws Exception {
-        MockHttpServletRequest request = getRequest("CART_SESSION");
-        assertThrows(ProductNotFoundException.class, () -> cartController.deleteProduct("TVX", request));
+        MockHttpSession session = getSession("CART_SESSION");
+        assertThrows(ProductNotFoundException.class, () -> cartController.deleteProduct("TVX", session));
     }
 
 
-    private MockHttpServletRequest getRequest(String id) {
-        MockHttpServletRequest request = new MockHttpServletRequest();
+    private MockHttpSession getSession(String id) {
         MockHttpSession session = new MockHttpSession();
-        request.setSession(session);
-        request.getSession().setAttribute(id, getMap());
-        return request;
+        session.setAttribute(id, getMap());
+        return session;
     }
 
     private List<Product> getProducts() {
